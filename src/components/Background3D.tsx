@@ -289,11 +289,53 @@ const FullScreenBackground = () => {
     );
 };
 
+const ParallaxStars = () => {
+    const groupRef1 = useRef<THREE.Group>(null);
+    const groupRef2 = useRef<THREE.Group>(null);
+    const groupRef3 = useRef<THREE.Group>(null);
+
+    useFrame(() => {
+        const scrollY = window.scrollY;
+
+        // Layer 1: Slowest (Furthest)
+        if (groupRef1.current) {
+            groupRef1.current.position.y = scrollY * 0.0002;
+            groupRef1.current.rotation.y = scrollY * 0.00005;
+        }
+
+        // Layer 2: Medium
+        if (groupRef2.current) {
+            groupRef2.current.position.y = scrollY * 0.0005;
+            groupRef2.current.rotation.y = scrollY * 0.0001;
+        }
+
+        // Layer 3: Fastest (Closest)
+        if (groupRef3.current) {
+            groupRef3.current.position.y = scrollY * 0.001;
+            groupRef3.current.rotation.y = scrollY * 0.0002;
+        }
+    });
+
+    return (
+        <>
+            <group ref={groupRef1}>
+                <Stars radius={150} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
+            </group>
+            <group ref={groupRef2}>
+                <Stars radius={100} depth={50} count={3000} factor={6} saturation={0} fade speed={1} />
+            </group>
+            <group ref={groupRef3}>
+                <Stars radius={50} depth={50} count={1000} factor={8} saturation={0} fade speed={1} />
+            </group>
+        </>
+    );
+};
+
 export const Background3D = () => {
     return (
         <>
             <group>
-                <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+                <ParallaxStars />
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={1.5} />
 
