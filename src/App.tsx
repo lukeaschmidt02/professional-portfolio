@@ -4,6 +4,7 @@ import { Section } from './components/Section';
 import { ProjectCard } from './components/ProjectCard';
 import { GlassCard } from './components/GlassCard';
 import { NotableContent } from './components/NotableContent';
+import { Experience } from './components/Experience';
 import { projects } from './data/projects';
 
 function App() {
@@ -16,6 +17,10 @@ function App() {
 
       <div className="relative z-10">
         <Hero />
+
+        <Section id="experience" className="bg-gradient-to-b from-transparent to-[#7BAFD4]/5">
+          <Experience />
+        </Section>
 
         <Section id="featured" className="bg-gradient-to-b from-transparent to-black/20">
           <GlassCard className="mb-12 inline-block px-8 py-4">

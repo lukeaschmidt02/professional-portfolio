@@ -1,13 +1,21 @@
 import { GlassCard } from "./GlassCard";
 import { notableContent } from "../data/notableContent";
+import UNCLogo from "../assets/UNCLogo.png";
 
 export const NotableContent = () => {
     return (
         <div className="container mx-auto px-4">
             <GlassCard className="mb-12 inline-block px-8 py-4">
-                <h2 className="text-4xl font-bold text-center">
-                    Notable <span className="text-[#7BAFD4]">Courses</span>
-                </h2>
+                <div className="flex items-center gap-4 justify-center">
+                    <img
+                        src={UNCLogo}
+                        alt="UNC Logo"
+                        className="h-12 w-auto rounded-xl"
+                    />
+                    <h2 className="text-4xl font-bold text-center">
+                        Notable Courses <span className="text-[#7BAFD4]"> - UNC Chapel Hill</span>
+                    </h2>
+                </div>
             </GlassCard>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
