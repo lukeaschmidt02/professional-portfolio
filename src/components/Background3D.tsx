@@ -1,43 +1,83 @@
-import { Stars } from '@react-three/drei';
+import { Stars, Image } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useRef, Suspense } from 'react';
 import * as THREE from 'three';
-import { ImageCube } from './ImageCube';
 import { Pterodactyl } from './Pterodactyl';
+import { EffectComposer, Glitch, Noise, Scanline, Vignette } from '@react-three/postprocessing';
+import { GlitchMode, BlendFunction } from 'postprocessing';
 
 // Import images
-import cliffside from '../assets/Cliffside.png';
-import hiking from '../assets/Hiking.png';
-import lowes from '../assets/Lowes_Tech.jpg';
-import professional from '../assets/Professional_picture.png';
-import speaking from '../assets/speaking_to_crowd.png';
+import glitchBg1 from '../assets/glitch_bg_1.png';
+import glitchBg2 from '../assets/glitch_bg_2.png';
+import glitchBg3 from '../assets/glitch_bg_3.png';
+
+const GlitchPlane = ({ image, position, rotation, scale, speed }: any) => {
+    const meshRef = useRef<THREE.Mesh>(null);
+
+    useFrame((state) => {
+        if (meshRef.current) {
+            meshRef.current.position.y += Math.sin(state.clock.elapsedTime * speed) * 0.002;
+        }
+    });
+
+    return (
+        <Image
+            ref={meshRef}
+            url={image}
+            position={position}
+            rotation={rotation}
+            scale={scale}
+            transparent
+            opacity={0.8}
+            toneMapped={false}
+        />
+    );
+};
 
 export const Background3D = () => {
     const groupRef = useRef<THREE.Group>(null);
 
     useFrame((state) => {
         if (groupRef.current) {
-            // Slow rotation of the entire group
-            groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.02;
+            // Very slow rotation
+            groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
         }
     });
 
     return (
-        <group ref={groupRef}>
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-            <ambientLight intensity={0.8} />
-            <pointLight position={[10, 10, 10]} intensity={1.5} />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        <>
+            <group ref={groupRef}>
+                <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} intensity={1.5} />
 
-            <ImageCube position={[-4, 2, -5]} imagePath={cliffside} speed={1.5} />
-            <ImageCube position={[4, -3, -6]} imagePath={hiking} speed={2} rotationIntensity={1.5} />
-            <ImageCube position={[-3, -4, -8]} imagePath={lowes} speed={1.2} floatIntensity={2} />
-            <ImageCube position={[5, 3, -10]} imagePath={professional} speed={1.8} />
-            <ImageCube position={[0, 5, -12]} imagePath={speaking} speed={1} rotationIntensity={2} />
+                {/* Film strip style arrangement */}
+                <GlitchPlane image={glitchBg1} position={[-6, 2, -8]} rotation={[0, 0.2, 0]} scale={[8, 5, 1]} speed={0.5} />
+                <GlitchPlane image={glitchBg2} position={[0, -1, -10]} rotation={[0, 0, 0]} scale={[10, 6, 1]} speed={0.3} />
+                <GlitchPlane image={glitchBg3} position={[6, 3, -8]} rotation={[0, -0.2, 0]} scale={[8, 5, 1]} speed={0.7} />
 
-            <Suspense fallback={null}>
-                <Pterodactyl />
-            </Suspense>
-        </group>
+                {/* Additional scattered planes for depth */}
+                <GlitchPlane image={glitchBg1} position={[8, -4, -12]} rotation={[0, -0.4, 0]} scale={[6, 4, 1]} speed={0.4} />
+                <GlitchPlane image={glitchBg3} position={[-8, -3, -12]} rotation={[0, 0.4, 0]} scale={[6, 4, 1]} speed={0.6} />
+
+                <Suspense fallback={null}>
+                    <Pterodactyl />
+                </Suspense>
+            </group>
+
+            <EffectComposer>
+                <Noise opacity={0.2} blendFunction={BlendFunction.OVERLAY} />
+                <Glitch
+                    delay={new THREE.Vector2(1.5, 3.5)}
+                    duration={new THREE.Vector2(0.6, 1.0)}
+                    strength={new THREE.Vector2(0.3, 1.0)}
+                    mode={GlitchMode.SPORADIC}
+                    active
+                    ratio={0.85}
+                />
+                <Scanline density={1.5} opacity={0.3} />
+                <Vignette eskil={false} offset={0.1} darkness={1.1} />
+            </EffectComposer>
+        </>
     );
 };
