@@ -3,6 +3,7 @@ import { Hero } from './components/Hero';
 import { Section } from './components/Section';
 import { ProjectCard } from './components/ProjectCard';
 import { GlassCard } from './components/GlassCard';
+import { NotableContent } from './components/NotableContent';
 import { projects } from './data/projects';
 
 function App() {
@@ -36,6 +37,10 @@ function App() {
               <ProjectCard key={project.id} {...project} color="bg-gray-900/50" />
             ))}
           </div>
+        </Section>
+
+        <Section id="notable-content" className="bg-gradient-to-b from-transparent to-[#7BAFD4]/5">
+          <NotableContent />
         </Section>
 
         <footer className="py-10 text-center text-gray-500 text-sm">
