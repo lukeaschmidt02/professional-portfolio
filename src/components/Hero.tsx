@@ -37,7 +37,7 @@ export const Hero = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="mt-6 text-gray-400 max-w-lg mx-auto"
+                        className="mt-6 text-gray-200 max-w-lg mx-auto"
                     >
                         Building immersive web experiences and scalable backend systems.
                     </motion.p>
