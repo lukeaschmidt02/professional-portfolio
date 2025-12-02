@@ -72,15 +72,18 @@ const GlitchTransitionMaterial = shaderMaterial(
         vec2 distortedUv = uv + vec2(glitch, 0.0);
 
         // RGB Shift
+        // RGB Shift
         float r1 = texture2D(uTexture1, distortedUv + vec2(scrollOffset, 0.0)).r;
         float g1 = texture2D(uTexture1, distortedUv).g;
         float b1 = texture2D(uTexture1, distortedUv - vec2(scrollOffset, 0.0)).b;
-        vec4 tex1 = vec4(r1, g1, b1, 1.0);
+        float a1 = texture2D(uTexture1, distortedUv).a;
+        vec4 tex1 = vec4(r1, g1, b1, a1);
 
         float r2 = texture2D(uTexture2, distortedUv + vec2(scrollOffset, 0.0)).r;
         float g2 = texture2D(uTexture2, distortedUv).g;
         float b2 = texture2D(uTexture2, distortedUv - vec2(scrollOffset, 0.0)).b;
-        vec4 tex2 = vec4(r2, g2, b2, 1.0);
+        float a2 = texture2D(uTexture2, distortedUv).a;
+        vec4 tex2 = vec4(r2, g2, b2, a2);
         
         // Mix textures
         // Use a noisy mix for transition
@@ -95,6 +98,8 @@ const GlitchTransitionMaterial = shaderMaterial(
         
         // Apply mask
         color.a *= mask;
+
+        if (color.a < 0.01) discard;
 
         gl_FragColor = color;
     }
@@ -203,6 +208,7 @@ const FullScreenBackground = () => {
             <glitchTransitionMaterial
                 ref={materialRef}
                 transparent
+                depthWrite={false}
                 uTexture1={textures[0]}
                 uTexture2={textures[1]}
                 uTiling={new THREE.Vector2(6, 3)} // Repeat 6 times horizontally, 3 times vertically (middle one visible)
