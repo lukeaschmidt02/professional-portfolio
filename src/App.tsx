@@ -2,6 +2,7 @@ import { CanvasContainer } from './components/CanvasContainer';
 import { Hero } from './components/Hero';
 import { Section } from './components/Section';
 import { ProjectCard } from './components/ProjectCard';
+import { GlassCard } from './components/GlassCard';
 import { projects } from './data/projects';
 
 function App() {
@@ -16,7 +17,9 @@ function App() {
         <Hero />
 
         <Section id="featured" className="bg-gradient-to-b from-transparent to-black/20">
-          <h2 className="text-4xl font-bold mb-12 text-center">Featured Work</h2>
+          <GlassCard className="mb-12 inline-block px-8 py-4">
+            <h2 className="text-4xl font-bold text-center">Featured Work</h2>
+          </GlassCard>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {featuredProjects.map((project) => (
               <ProjectCard key={project.id} {...project} />
@@ -25,7 +28,9 @@ function App() {
         </Section>
 
         <Section id="projects">
-          <h2 className="text-4xl font-bold mb-12 text-center">More Projects</h2>
+          <GlassCard className="mb-12 inline-block px-8 py-4">
+            <h2 className="text-4xl font-bold text-center">More Projects</h2>
+          </GlassCard>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {otherProjects.map((project) => (
               <ProjectCard key={project.id} {...project} color="bg-gray-900/50" />
@@ -34,7 +39,9 @@ function App() {
         </Section>
 
         <footer className="py-10 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} Luke Schmidt. Built with React, Three.js & Tailwind.</p>
+          <GlassCard className="inline-block px-6 py-3">
+            <p>© {new Date().getFullYear()} Luke Schmidt. Built with React, Three.js & Tailwind.</p>
+          </GlassCard>
         </footer>
       </div>
     </main>

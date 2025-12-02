@@ -15,7 +15,7 @@ export const ProjectCard = ({ title, description, techStack, imageUrl, demoUrl, 
     return (
         <motion.div
             whileHover={{ y: -10 }}
-            className={`rounded-xl overflow-hidden ${color} shadow-lg border border-gray-700/50 flex flex-col h-full`}
+            className={`rounded-3xl overflow-hidden bg-black/30 backdrop-blur-md shadow-2xl border border-white/10 flex flex-col h-full`}
         >
             {imageUrl ? (
                 <div className="h-48 overflow-hidden">

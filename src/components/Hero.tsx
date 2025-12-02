@@ -1,15 +1,11 @@
 import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
+import { GlassCard } from './GlassCard';
 
 export const Hero = () => {
     return (
         <section className="h-screen flex flex-col justify-center items-center relative">
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1 }}
-                className="text-center z-10 bg-black/30 backdrop-blur-md p-8 md:p-12 rounded-3xl border border-white/10 shadow-2xl max-w-4xl mx-4"
-            >
+            <GlassCard className="text-center z-10 p-8 md:p-12 max-w-4xl mx-4">
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -34,7 +30,7 @@ export const Hero = () => {
                 >
                     Building immersive web experiences and scalable backend systems.
                 </motion.p>
-            </motion.div>
+            </GlassCard>
 
             <motion.div
                 initial={{ opacity: 0 }}
