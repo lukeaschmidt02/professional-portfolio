@@ -19,6 +19,7 @@ const GlitchTransitionMaterial = shaderMaterial(
         uGlitchStrength: 0,
         uScrollSpeed: 0,
         uTime: 0,
+        uScrollTime: 0,
         uResolution: new THREE.Vector2(),
         uTiling1: new THREE.Vector2(1, 1),
         uTiling2: new THREE.Vector2(1, 1)
@@ -39,6 +40,7 @@ const GlitchTransitionMaterial = shaderMaterial(
     uniform float uGlitchStrength;
     uniform float uScrollSpeed;
     uniform float uTime;
+    uniform float uScrollTime;
     uniform vec2 uTiling1;
     uniform vec2 uTiling2;
     varying vec2 vUv;
@@ -73,8 +75,8 @@ const GlitchTransitionMaterial = shaderMaterial(
             }
         }
         
-        vec2 distortedUv1 = uv1 + vec2(glitch, 0.0);
-        vec2 distortedUv2 = uv2 + vec2(glitch, 0.0);
+        vec2 distortedUv1 = uv1 + vec2(glitch + uScrollTime, 0.0);
+        vec2 distortedUv2 = uv2 + vec2(glitch + uScrollTime, 0.0);
 
         // Texture 1 Sample
         float r1 = texture2D(uTexture1, distortedUv1 + vec2(scrollOffset, 0.0)).r;
@@ -96,6 +98,16 @@ const GlitchTransitionMaterial = shaderMaterial(
         float mixVal = smoothstep(0.4, 0.6, uMix + (mixNoise - 0.5) * uGlitchStrength);
         
         vec4 color = mix(tex1, tex2, uMix); // Simple mix for now to ensure smoothness
+
+        // Vintage Effect
+        // 1. Sepia Tone
+        float grey = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+        vec3 sepia = vec3(grey) * vec3(1.2, 1.0, 0.8);
+        color.rgb = mix(color.rgb, sepia, 0.4); // 40% sepia for a subtle vintage feel
+
+        // 2. Film Grain
+        float grain = random(vUv * uTime) * 0.05;
+        color.rgb -= grain;
 
         // Add some scanlines based on scroll
         float scanline = sin(vUv.y * 200.0 + uTime * 10.0) * 0.1 * uScrollSpeed;
@@ -164,6 +176,8 @@ const FullScreenBackground = () => {
         // Update time
         if (materialRef.current) {
             materialRef.current.uTime = state.clock.elapsedTime;
+            // Infinite scroll: slow constant movement
+            materialRef.current.uScrollTime = state.clock.elapsedTime * 0.1;
 
             // Scroll speed calculation
             const currentScrollY = window.scrollY;
