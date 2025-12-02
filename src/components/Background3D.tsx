@@ -57,11 +57,16 @@ const GlitchTransitionMaterial = shaderMaterial(
         
         // Calculate row index to mask everything but the middle row
         // We use uTiling1.y for the mask since vertical tiling is fixed/shared (3 rows)
-        float row = floor(vUv.y * uTiling1.y);
         float middleRow = floor(uTiling1.y / 2.0);
         
-        // Mask: 1.0 if in middle row, 0.0 otherwise
-        float mask = step(middleRow, row) - step(middleRow + 1.0, row);
+        // Calculate bounds for the middle row with a slight inset to avoid edge artifacts
+        float rowHeight = 1.0 / uTiling1.y;
+        float inset = 0.005; // 0.5% inset to hide wrapping seams
+        float lowerBound = (middleRow * rowHeight) + inset;
+        float upperBound = ((middleRow + 1.0) * rowHeight) - inset;
+        
+        // Mask: 1.0 if within bounds, 0.0 otherwise
+        float mask = step(lowerBound, vUv.y) - step(upperBound, vUv.y);
         
         // Scroll distortion (RGB Shift based on speed)
         float scrollOffset = uScrollSpeed * 0.05;
