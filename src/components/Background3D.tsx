@@ -6,10 +6,9 @@ import { Pterodactyl } from './Pterodactyl';
 import { EffectComposer, Noise, Vignette } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 
-// Import images
-import glitchBg1 from '../assets/glitch_bg_1.png';
-import glitchBg2 from '../assets/glitch_bg_2.png';
-import glitchBg3 from '../assets/glitch_bg_3.png';
+// Import images dynamically
+const monochromeImages = import.meta.glob('../assets/monochromeBackground/*', { eager: true });
+const textureUrls = Object.values(monochromeImages).map((img: any) => img.default);
 
 // Custom Shader Material
 const GlitchTransitionMaterial = shaderMaterial(
@@ -20,7 +19,8 @@ const GlitchTransitionMaterial = shaderMaterial(
         uGlitchStrength: 0,
         uScrollSpeed: 0,
         uTime: 0,
-        uResolution: new THREE.Vector2()
+        uResolution: new THREE.Vector2(),
+        uTiling: new THREE.Vector2(1, 1)
     },
     // Vertex Shader
     `
@@ -38,6 +38,7 @@ const GlitchTransitionMaterial = shaderMaterial(
     uniform float uGlitchStrength;
     uniform float uScrollSpeed;
     uniform float uTime;
+    uniform vec2 uTiling;
     varying vec2 vUv;
 
     // Random function
@@ -46,7 +47,15 @@ const GlitchTransitionMaterial = shaderMaterial(
     }
 
     void main() {
-        vec2 uv = vUv;
+        vec2 uv = vUv * uTiling; // Apply tiling
+        
+        // Calculate row index to mask everything but the middle row
+        // Assuming uTiling.y is odd (e.g., 3), we want the middle one.
+        float row = floor(vUv.y * uTiling.y);
+        float middleRow = floor(uTiling.y / 2.0);
+        
+        // Mask: 1.0 if in middle row, 0.0 otherwise
+        float mask = step(middleRow, row) - step(middleRow + 1.0, row);
         
         // Scroll distortion (RGB Shift based on speed)
         float scrollOffset = uScrollSpeed * 0.05;
@@ -83,6 +92,9 @@ const GlitchTransitionMaterial = shaderMaterial(
         // Add some scanlines based on scroll
         float scanline = sin(uv.y * 200.0 + uTime * 10.0) * 0.1 * uScrollSpeed;
         color.rgb += scanline;
+        
+        // Apply mask
+        color.a *= mask;
 
         gl_FragColor = color;
     }
@@ -102,7 +114,8 @@ declare global {
 
 const FullScreenBackground = () => {
     const { viewport } = useThree();
-    const textures = useTexture([glitchBg1, glitchBg2, glitchBg3]);
+    // Load textures dynamically
+    const textures = useTexture(textureUrls.length > 0 ? textureUrls : ['/placeholder.png']); // Fallback if empty
     const materialRef = useRef<any>(null);
 
     // State for transition
@@ -114,6 +127,15 @@ const FullScreenBackground = () => {
     // Scroll tracking
     const lastScrollY = useRef(0);
     const scrollSpeed = useRef(0);
+
+    // Setup textures for tiling
+    useMemo(() => {
+        textures.forEach(texture => {
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping; // Also wrap vertically just in case
+            texture.needsUpdate = true;
+        });
+    }, [textures]);
 
     useFrame((state, delta) => {
         // Update time
@@ -177,12 +199,13 @@ const FullScreenBackground = () => {
 
     return (
         <mesh position={[0, 0, -10]}>
-            <planeGeometry args={[viewport.width * 1.5, viewport.height * 1.5]} />
+            <planeGeometry args={[viewport.width * 4, viewport.height * 4]} />
             <glitchTransitionMaterial
                 ref={materialRef}
                 transparent
                 uTexture1={textures[0]}
                 uTexture2={textures[1]}
+                uTiling={new THREE.Vector2(6, 3)} // Repeat 6 times horizontally, 3 times vertically (middle one visible)
             />
         </mesh>
     );
