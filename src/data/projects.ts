@@ -21,17 +21,10 @@ export const projects: Project[] = [
     {
         id: "dino-glide",
         title: "Dino Glide",
-        description: "A mobile game with over 300 downloads. Players control a dino gliding through obstacles. Utilizes Unity (C#) for game logic and integrates Apple StoreKit & Google Play Billing for monetization.",
+        description: "A mobile game with over 300 downloads. Players control a dino gliding through obstacles. Utilizes Unity (C#) for game logic and integrates Apple StoreKit & Google Play Billing for monetization, as well as Google AdMob for in-app ads.",
         techStack: ["Unity", "C#", "Mobile Game", "Monetization"],
         imageUrl: "https://i.ibb.co/MZKmnm6/App-Icon-transformed.png",
         featured: true,
-    },
-    {
-        id: "lps-insights",
-        title: "LPS Insights Agent",
-        description: "Architected high-performance backend systems for enterprise-grade generative AI tools at Lowe's. Provides critical data synthesis for sales teams.",
-        techStack: ["Python", "FastAPI", "LangChain", "Generative AI"],
-        featured: false,
     },
     {
         id: "gan4seg",

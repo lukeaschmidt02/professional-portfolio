@@ -24,7 +24,7 @@ function App() {
 
         <Section id="featured" className="bg-gradient-to-b from-transparent to-black/20">
           <GlassCard className="mb-12 inline-block px-8 py-4">
-            <h2 className="text-4xl font-bold text-center">Featured Work</h2>
+            <h2 className="text-4xl font-bold text-center">Featured Personal Work</h2>
           </GlassCard>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {featuredProjects.map((project) => (
@@ -35,7 +35,7 @@ function App() {
 
         <Section id="projects">
           <GlassCard className="mb-12 inline-block px-8 py-4">
-            <h2 className="text-4xl font-bold text-center">More Projects</h2>
+            <h2 className="text-4xl font-bold text-center">More Projects and Coursework</h2>
           </GlassCard>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {otherProjects.map((project) => (

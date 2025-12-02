@@ -12,7 +12,7 @@ export const Experience = () => {
                         className="h-12 w-auto rounded-xl bg-white/90 p-1"
                     />
                     <h2 className="text-4xl font-bold text-center">
-                        Professional <span className="text-[#7BAFD4]">Experience</span>
+                        Professional Experience
                     </h2>
                 </div>
             </GlassCard>
