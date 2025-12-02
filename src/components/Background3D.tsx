@@ -20,7 +20,8 @@ const GlitchTransitionMaterial = shaderMaterial(
         uScrollSpeed: 0,
         uTime: 0,
         uResolution: new THREE.Vector2(),
-        uTiling: new THREE.Vector2(1, 1)
+        uTiling1: new THREE.Vector2(1, 1),
+        uTiling2: new THREE.Vector2(1, 1)
     },
     // Vertex Shader
     `
@@ -38,7 +39,8 @@ const GlitchTransitionMaterial = shaderMaterial(
     uniform float uGlitchStrength;
     uniform float uScrollSpeed;
     uniform float uTime;
-    uniform vec2 uTiling;
+    uniform vec2 uTiling1;
+    uniform vec2 uTiling2;
     varying vec2 vUv;
 
     // Random function
@@ -47,12 +49,14 @@ const GlitchTransitionMaterial = shaderMaterial(
     }
 
     void main() {
-        vec2 uv = vUv * uTiling; // Apply tiling
+        // Calculate UVs for each texture with its own tiling
+        vec2 uv1 = vUv * uTiling1;
+        vec2 uv2 = vUv * uTiling2;
         
         // Calculate row index to mask everything but the middle row
-        // Assuming uTiling.y is odd (e.g., 3), we want the middle one.
-        float row = floor(vUv.y * uTiling.y);
-        float middleRow = floor(uTiling.y / 2.0);
+        // We use uTiling1.y for the mask since vertical tiling is fixed/shared (3 rows)
+        float row = floor(vUv.y * uTiling1.y);
+        float middleRow = floor(uTiling1.y / 2.0);
         
         // Mask: 1.0 if in middle row, 0.0 otherwise
         float mask = step(middleRow, row) - step(middleRow + 1.0, row);
@@ -63,37 +67,38 @@ const GlitchTransitionMaterial = shaderMaterial(
         // Glitch displacement
         float glitch = 0.0;
         if (uGlitchStrength > 0.0) {
-            float noise = random(vec2(uv.y, uTime));
+            float noise = random(vec2(vUv.y, uTime)); // Use vUv.y for consistent noise across tilings
             if (noise < uGlitchStrength) {
-                glitch = (random(vec2(uv.y, uTime * 2.0)) - 0.5) * 0.2 * uGlitchStrength;
+                glitch = (random(vec2(vUv.y, uTime * 2.0)) - 0.5) * 0.2 * uGlitchStrength;
             }
         }
         
-        vec2 distortedUv = uv + vec2(glitch, 0.0);
+        vec2 distortedUv1 = uv1 + vec2(glitch, 0.0);
+        vec2 distortedUv2 = uv2 + vec2(glitch, 0.0);
 
-        // RGB Shift
-        // RGB Shift
-        float r1 = texture2D(uTexture1, distortedUv + vec2(scrollOffset, 0.0)).r;
-        float g1 = texture2D(uTexture1, distortedUv).g;
-        float b1 = texture2D(uTexture1, distortedUv - vec2(scrollOffset, 0.0)).b;
-        float a1 = texture2D(uTexture1, distortedUv).a;
+        // Texture 1 Sample
+        float r1 = texture2D(uTexture1, distortedUv1 + vec2(scrollOffset, 0.0)).r;
+        float g1 = texture2D(uTexture1, distortedUv1).g;
+        float b1 = texture2D(uTexture1, distortedUv1 - vec2(scrollOffset, 0.0)).b;
+        float a1 = texture2D(uTexture1, distortedUv1).a;
         vec4 tex1 = vec4(r1, g1, b1, a1);
 
-        float r2 = texture2D(uTexture2, distortedUv + vec2(scrollOffset, 0.0)).r;
-        float g2 = texture2D(uTexture2, distortedUv).g;
-        float b2 = texture2D(uTexture2, distortedUv - vec2(scrollOffset, 0.0)).b;
-        float a2 = texture2D(uTexture2, distortedUv).a;
+        // Texture 2 Sample
+        float r2 = texture2D(uTexture2, distortedUv2 + vec2(scrollOffset, 0.0)).r;
+        float g2 = texture2D(uTexture2, distortedUv2).g;
+        float b2 = texture2D(uTexture2, distortedUv2 - vec2(scrollOffset, 0.0)).b;
+        float a2 = texture2D(uTexture2, distortedUv2).a;
         vec4 tex2 = vec4(r2, g2, b2, a2);
         
         // Mix textures
         // Use a noisy mix for transition
-        float mixNoise = random(vec2(uv.x, uv.y + uTime));
+        float mixNoise = random(vec2(vUv.x, vUv.y + uTime));
         float mixVal = smoothstep(0.4, 0.6, uMix + (mixNoise - 0.5) * uGlitchStrength);
         
         vec4 color = mix(tex1, tex2, uMix); // Simple mix for now to ensure smoothness
 
         // Add some scanlines based on scroll
-        float scanline = sin(uv.y * 200.0 + uTime * 10.0) * 0.1 * uScrollSpeed;
+        float scanline = sin(vUv.y * 200.0 + uTime * 10.0) * 0.1 * uScrollSpeed;
         color.rgb += scanline;
         
         // Apply mask
@@ -142,6 +147,19 @@ const FullScreenBackground = () => {
         });
     }, [textures]);
 
+    // Calculate tiling for ALL textures
+    const allTilings = useMemo(() => {
+        return textures.map(texture => {
+            if (!texture || !texture.image) return new THREE.Vector2(6, 3);
+            const img = texture.image as HTMLImageElement;
+            const imageAspect = img.width / img.height;
+            const viewportAspect = viewport.width / viewport.height;
+            const tilingY = 3;
+            const tilingX = tilingY * (viewportAspect / imageAspect);
+            return new THREE.Vector2(tilingX, tilingY);
+        });
+    }, [textures, viewport.width, viewport.height]);
+
     useFrame((state, delta) => {
         // Update time
         if (materialRef.current) {
@@ -167,6 +185,7 @@ const FullScreenBackground = () => {
                 setNextIndex(next);
                 if (materialRef.current) {
                     materialRef.current.uTexture2 = textures[next];
+                    materialRef.current.uTiling2 = allTilings[next];
                 }
             }
         } else {
@@ -187,6 +206,7 @@ const FullScreenBackground = () => {
                 setCurrentIndex(nextIndex);
                 if (materialRef.current) {
                     materialRef.current.uTexture1 = textures[nextIndex];
+                    materialRef.current.uTiling1 = allTilings[nextIndex];
                     materialRef.current.uMix = 0;
                     materialRef.current.uGlitchStrength = 0;
                 }
@@ -198,9 +218,41 @@ const FullScreenBackground = () => {
     useMemo(() => {
         if (materialRef.current) {
             materialRef.current.uTexture1 = textures[0];
+            materialRef.current.uTiling1 = allTilings[0];
+
             materialRef.current.uTexture2 = textures[1];
+            materialRef.current.uTiling2 = allTilings[1];
         }
-    }, [textures]);
+    }, [textures, allTilings]);
+
+    // Calculate tiling based on aspect ratio
+    const tiling = useMemo(() => {
+        const texture = textures[0];
+        if (!texture || !texture.image) {
+            console.log("Texture or image missing, using default tiling");
+            return new THREE.Vector2(6, 3);
+        }
+
+        const img = texture.image as HTMLImageElement;
+        const imageAspect = img.width / img.height;
+        const viewportAspect = viewport.width / viewport.height;
+        const tilingY = 3; // Keep vertical tiling fixed to 3 rows
+
+        // Formula: tilingX = tilingY * (viewportAspect / imageAspect)
+        const tilingX = tilingY * (viewportAspect / imageAspect);
+
+        console.log("Aspect Ratio Debug:", {
+            imageWidth: img.width,
+            imageHeight: img.height,
+            imageAspect,
+            viewportWidth: viewport.width,
+            viewportHeight: viewport.height,
+            viewportAspect,
+            calculatedTilingX: tilingX
+        });
+
+        return new THREE.Vector2(tilingX, tilingY);
+    }, [textures, viewport.width, viewport.height]);
 
     return (
         <mesh position={[0, 0, -10]}>
@@ -211,7 +263,8 @@ const FullScreenBackground = () => {
                 depthWrite={false}
                 uTexture1={textures[0]}
                 uTexture2={textures[1]}
-                uTiling={new THREE.Vector2(6, 3)} // Repeat 6 times horizontally, 3 times vertically (middle one visible)
+                uTiling1={allTilings[0]}
+                uTiling2={allTilings[1]}
             />
         </mesh>
     );
