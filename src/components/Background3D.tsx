@@ -1,8 +1,9 @@
 import { Stars } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useRef, Suspense } from 'react';
 import * as THREE from 'three';
 import { ImageCube } from './ImageCube';
+import { Pterodactyl } from './Pterodactyl';
 
 // Import images
 import cliffside from '../assets/Cliffside.png';
@@ -33,6 +34,10 @@ export const Background3D = () => {
             <ImageCube position={[-3, -4, -8]} imagePath={lowes} speed={1.2} floatIntensity={2} />
             <ImageCube position={[5, 3, -10]} imagePath={professional} speed={1.8} />
             <ImageCube position={[0, 5, -12]} imagePath={speaking} speed={1} rotationIntensity={2} />
+
+            <Suspense fallback={null}>
+                <Pterodactyl />
+            </Suspense>
         </group>
     );
 };

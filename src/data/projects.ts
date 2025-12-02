@@ -15,6 +15,7 @@ export const projects: Project[] = [
         title: "Huntago",
         description: "A Social Geocaching mobile application that gamifies exploration. Built with React Native and integrated with Google Maps API for location services. Uses Firebase for secure user authentication and real-time database management.",
         techStack: ["React Native", "Google Maps API", "Firebase", "TypeScript"],
+        imageUrl: "https://i.ibb.co/fkWfTBR/logo.png",
         featured: true,
     },
     {
@@ -22,6 +23,7 @@ export const projects: Project[] = [
         title: "Dino Glide",
         description: "A mobile game with over 300 downloads. Players control a dino gliding through obstacles. Utilizes Unity (C#) for game logic and integrates Apple StoreKit & Google Play Billing for monetization.",
         techStack: ["Unity", "C#", "Mobile Game", "Monetization"],
+        imageUrl: "https://i.ibb.co/MZKmnm6/App-Icon-transformed.png",
         featured: true,
     },
     {
