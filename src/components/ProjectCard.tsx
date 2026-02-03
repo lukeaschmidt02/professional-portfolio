@@ -8,10 +8,10 @@ interface ProjectCardProps {
     imageUrl?: string;
     demoUrl?: string;
     repoUrl?: string;
-    color?: string;
+
 }
 
-export const ProjectCard = ({ title, description, techStack, imageUrl, demoUrl, repoUrl, color = "bg-secondary" }: ProjectCardProps) => {
+export const ProjectCard = ({ title, description, techStack, imageUrl, demoUrl, repoUrl }: ProjectCardProps) => {
     const handleCardClick = () => {
         if (demoUrl) {
             window.open(demoUrl, '_blank');

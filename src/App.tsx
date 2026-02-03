@@ -39,7 +39,7 @@ function App() {
           </GlassCard>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {otherProjects.map((project) => (
-              <ProjectCard key={project.id} {...project} color="bg-gray-900/50" />
+              <ProjectCard key={project.id} {...project} />
             ))}
           </div>
         </Section>

@@ -131,13 +131,7 @@ const GlitchTransitionMaterial = shaderMaterial(
 extend({ GlitchTransitionMaterial });
 
 // Add type definition for the custom material
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            glitchTransitionMaterial: any;
-        }
-    }
-}
+
 
 const FullScreenBackground = () => {
     const { viewport } = useThree();
@@ -245,37 +239,11 @@ const FullScreenBackground = () => {
     }, [textures, allTilings]);
 
     // Calculate tiling based on aspect ratio
-    const tiling = useMemo(() => {
-        const texture = textures[0];
-        if (!texture || !texture.image) {
-            console.log("Texture or image missing, using default tiling");
-            return new THREE.Vector2(6, 3);
-        }
-
-        const img = texture.image as HTMLImageElement;
-        const imageAspect = img.width / img.height;
-        const viewportAspect = viewport.width / viewport.height;
-        const tilingY = 3; // Keep vertical tiling fixed to 3 rows
-
-        // Formula: tilingX = tilingY * (viewportAspect / imageAspect)
-        const tilingX = tilingY * (viewportAspect / imageAspect);
-
-        console.log("Aspect Ratio Debug:", {
-            imageWidth: img.width,
-            imageHeight: img.height,
-            imageAspect,
-            viewportWidth: viewport.width,
-            viewportHeight: viewport.height,
-            viewportAspect,
-            calculatedTilingX: tilingX
-        });
-
-        return new THREE.Vector2(tilingX, tilingY);
-    }, [textures, viewport.width, viewport.height]);
 
     return (
         <mesh position={[0, 0, -10]}>
             <planeGeometry args={[viewport.width * 4, viewport.height * 4]} />
+            {/* @ts-ignore */}
             <glitchTransitionMaterial
                 ref={materialRef}
                 transparent
