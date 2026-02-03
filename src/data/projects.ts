@@ -24,6 +24,7 @@ export const projects: Project[] = [
         description: "A mobile game with over 300 downloads. Players control a dino gliding through obstacles. Utilizes Unity (C#) for game logic and integrates Apple StoreKit & Google Play Billing for monetization, as well as Google AdMob for in-app ads.",
         techStack: ["Unity", "C#", "Mobile Game", "Monetization"],
         imageUrl: "https://i.ibb.co/MZKmnm6/App-Icon-transformed.png",
+        demoUrl: "https://linktr.ee/dinoglide",
         featured: true,
     },
     {

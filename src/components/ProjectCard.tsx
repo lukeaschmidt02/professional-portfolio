@@ -12,10 +12,17 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard = ({ title, description, techStack, imageUrl, demoUrl, repoUrl, color = "bg-secondary" }: ProjectCardProps) => {
+    const handleCardClick = () => {
+        if (demoUrl) {
+            window.open(demoUrl, '_blank');
+        }
+    };
+
     return (
         <motion.div
             whileHover={{ y: -10 }}
-            className={`rounded-3xl overflow-hidden bg-black/30 backdrop-blur-md shadow-2xl border border-white/10 flex flex-col h-full`}
+            onClick={handleCardClick}
+            className={`rounded-3xl overflow-hidden bg-black/30 backdrop-blur-md shadow-2xl border border-white/10 flex flex-col h-full ${demoUrl ? 'cursor-pointer hover:border-white/30 transition-colors' : ''}`}
         >
             {imageUrl ? (
                 <div className="h-48 overflow-hidden">
@@ -41,12 +48,24 @@ export const ProjectCard = ({ title, description, techStack, imageUrl, demoUrl, 
 
                 <div className="flex gap-4 mt-auto">
                     {demoUrl && (
-                        <a href={demoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-white hover:text-accent transition-colors">
-                            <ExternalLink size={16} /> Live Demo
+                        <a
+                            href={demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-2 text-sm font-medium text-white hover:text-accent transition-colors"
+                        >
+                            <ExternalLink size={16} /> Go and Download
                         </a>
                     )}
                     {repoUrl && (
-                        <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-white hover:text-accent transition-colors">
+                        <a
+                            href={repoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-2 text-sm font-medium text-white hover:text-accent transition-colors"
+                        >
                             <Github size={16} /> Code
                         </a>
                     )}

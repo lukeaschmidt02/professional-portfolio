@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, Github, Linkedin, FileText } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 import profilePic from '../assets/Professional_picture.png';
 
@@ -39,8 +39,46 @@ export const Hero = () => {
                         transition={{ duration: 0.8, delay: 0.6 }}
                         className="mt-6 text-gray-200 max-w-lg mx-auto"
                     >
-                        Building immersive web experiences and scalable backend systems.
+                        Building enterprise AI agents, scalable web platforms, and immersive interactive experiences.
                     </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.8 }}
+                        className="flex justify-center gap-6 mt-8"
+                    >
+                        <motion.a
+                            href="https://www.linkedin.com/in/lukeschmidt02/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ y: -5 }}
+                            className="p-3 bg-white/10 rounded-full hover:bg-white/20 hover:text-[#0077b5] transition-colors border border-white/5"
+                            title="LinkedIn"
+                        >
+                            <Linkedin size={24} />
+                        </motion.a>
+                        <motion.a
+                            href="https://github.com/lukeaschmidt02"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ y: -5 }}
+                            className="p-3 bg-white/10 rounded-full hover:bg-white/20 hover:text-white transition-colors border border-white/5"
+                            title="GitHub"
+                        >
+                            <Github size={24} />
+                        </motion.a>
+                        <motion.a
+                            href="https://fuchsia-giuditta-7.tiiny.site/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ y: -5 }}
+                            className="p-3 bg-white/10 rounded-full hover:bg-white/20 hover:text-red-400 transition-colors border border-white/5"
+                            title="Resume"
+                        >
+                            <FileText size={24} />
+                        </motion.a>
+                    </motion.div>
                 </GlassCard>
             </div>
 
